@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const ListingSchema = new mongoose.Schema(
   {
+    _id: { type: String, required: true },
     listing_url: { type: String },
     name: { type: String, required: true },
     summary: { type: String },
@@ -55,6 +56,7 @@ const ListingSchema = new mongoose.Schema(
   },
   {
     collection: "listingsAndReviews",
+    _id: false, // Disable default _id auto-generation
   }
 );
 
