@@ -311,4 +311,34 @@ router.get("/allListings", async (req, res) => {
   }
 });
 
+router.get("/search", async (req, res) => {
+  const amenitiesQuery = req.query.amenities
+    ? req.query.amenities.split(",")
+    : [];
+
+  // Create an array of regex patterns for each amenity
+  const regexArray = amenitiesQuery.map((amenity) => {
+    return new RegExp(amenity, "i");
+  });
+
+  try {
+    // Find listings that contain any of the amenities in the query using regex
+    const listings = await Listing.find({
+      amenities: { $elemMatch: { $in: regexArray } },
+      "review_scores.review_scores_rating": { $exists: true, $ne: null },
+    })
+      .sort({ "review_scores.review_scores_rating": -1 }) // Sort by review_scores_rating in descending order
+      .limit(15); // Limit to top 15 listings
+
+    res.json(listings);
+  } catch (error) {
+    console.error("Error fetching listings:", error);
+    res.status(500).json({ message: "Error fetching listings" });
+  }
+});
+
+router.get("/showSearch", async (req, res) => {
+  res.render("search");
+});
+
 module.exports = router;
