@@ -3,8 +3,16 @@ $(document).ready(function () {
     processing: true,
     serverSide: true,
     ajax: {
-      url: "/Listings/data",
+      url: "/api/AirBnBs",
       type: "GET",
+      data: function (d) {
+        return {
+          page: Math.floor(d.start / d.length) + 1, // Calculate page from start and length
+          perPage: d.length, // Items per page
+          property_type: $("#dt-search-0").val(), // Optional property type filter
+          draw: d.draw, // Include draw for DataTables
+        };
+      },
     },
     columns: [
       {
@@ -16,7 +24,7 @@ $(document).ready(function () {
       { data: "name" },
       {
         data: "summary",
-        render: function (summary, type, row) {
+        render: function (summary) {
           return summary.length > 60
             ? summary.substring(0, 60) + "..."
             : summary;
@@ -24,7 +32,7 @@ $(document).ready(function () {
       },
       {
         data: "price",
-        render: function (data, type, row) {
+        render: function (data) {
           const price = data.$numberDecimal ?? data;
           return `$${price}`;
         },
@@ -45,16 +53,13 @@ $(document).ready(function () {
     order: [[1, "asc"]],
     pageLength: 10,
     initComplete: function () {
-      // Apply dark theme styling to the table after DataTable is initialized
-      $(".dataTables_wrapper").addClass("bg-dark text-light"); // Dark background for the table container
-      $(".dataTables_length, .dataTables_filter").addClass("text-light"); // Style length and filter controls
-      $(".dataTables_paginate").addClass("text-light"); // Style pagination controls
-      $("thead").addClass("thead-dark"); // Dark header styling
-      $(".dataTable").addClass("table-dark table-striped"); // Table dark styling
-
-      // Override alternating row colors to ensure consistent dark theme
-      $("#listingsTable tbody tr").addClass("bg-dark text-light"); // Add dark background and light text for all rows
-      $("#listingsTable tbody tr.odd").removeClass("odd"); // Remove the default 'odd' class to stop alternating row styles
+      $(".dataTables_wrapper").addClass("bg-dark text-light");
+      $(".dataTables_length, .dataTables_filter").addClass("text-light");
+      $(".dataTables_paginate").addClass("text-light");
+      $("thead").addClass("thead-dark");
+      $(".dataTable").addClass("table-dark table-striped");
+      $("#listingsTable tbody tr").addClass("bg-dark text-light");
+      $("#listingsTable tbody tr.odd").removeClass("odd");
     },
   });
 });

@@ -3,6 +3,7 @@ const path = require("path");
 const connectDB = require(path.join(__dirname, "config", "database"));
 const passport = require("passport");
 const session = require("express-session");
+const handlebars = require("express-handlebars");
 
 const app = express();
 
@@ -25,11 +26,6 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-const Listing = require(path.join(__dirname, "model", "Listing"));
-const User = require(path.join(__dirname, "model", "User"));
-const authMiddleware = require(path.join(__dirname, "middleware", "auth"));
-const handlebars = require("express-handlebars");
-
 // Set the views directory
 app.set("views", path.join(__dirname, "views"));
 // Sets our app to use the handlebars engine
@@ -38,197 +34,23 @@ app.set("view engine", "handlebars");
 app.engine(
   "handlebars",
   handlebars.engine({
-    layoutsDir: path.join(__dirname, "views", "layouts"), // Absolute path for layouts directory
-    allowProtoPropertiesByDefault: true, // Allow proto properties
-    allowProtoMethodsByDefault: true, // Allow proto methods
+    layoutsDir: path.join(__dirname, "views", "layouts"),
+    allowProtoPropertiesByDefault: true,
+    allowProtoMethodsByDefault: true,
   })
 );
 
+// Connect to database
 connectDB();
-// Routes
-app.get("/", authMiddleware, async (req, res) => {
-  try {
-    // Fetch the first 5 listings
-    const listings = await Listing.find().lean().limit(5);
 
-    res.render("index", {
-      title: "Home Page",
-      message: "Welcome to the Airbnb Clone!",
-      listings, // Pass the listings to the Pug template
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("An error occurred while fetching listings.");
-  }
-});
+// Import routes
+const listingRoutes = require(path.join(__dirname, "routes", "listingRoutes"));
+const authRoutes = require(path.join(__dirname, "routes", "authRoutes"));
 
-//route to view all listings viewListings
-app.get("/listings", authMiddleware, async (req, res) => {
-  try {
-    // Fetch all listings
-    const listings = await Listing.find().lean().limit(18);
-    //limit number of results to improve performance
+// Use routes
+app.use("/", listingRoutes);
+app.use("/", authRoutes);
 
-    res.render("viewListings", {
-      title: "View Listings",
-      listings,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("An error occurred while fetching listings.");
-  }
-});
-
-//Route to create a new listing
-app.post("/listings", async (req, res) => {
-  try {
-    const newListing = new Listing(req.body);
-
-    // Assuming the body contains all required fields, have to add validations here based on the form design with final fields chosen
-    await newListing.save();
-    res
-      .status(201)
-      .json({ message: "Listing created successfully", listing: newListing });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error creating listing", error });
-  }
-});
-
-app.get("/listing/add", authMiddleware, async (req, res) => {
-  res.render("add");
-});
-// Route to update an existing listing
-app.put("/listings/:id", authMiddleware, async (req, res) => {
-  try {
-    const updatedListing = await Listing.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      {
-        new: true, // to return the updated document
-        runValidators: true, // Ensure validation is applied, need to change with express-validator later
-      }
-    );
-    if (!updatedListing) {
-      return res.status(404).json({ message: "Listing not found" });
-    }
-    res.json({
-      message: "Listing updated successfully",
-      listing: updatedListing,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error updating listing", error });
-  }
-});
-
-// Route to delete a listing
-app.delete("/listings/:id", authMiddleware, async (req, res) => {
-  try {
-    const deletedListing = await Listing.findByIdAndDelete(req.params.id);
-    if (!deletedListing) {
-      return res.status(404).json({ message: "Listing not found" });
-    }
-    res.json({
-      message: "Listing deleted successfully",
-      listing: deletedListing,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error deleting listing", error });
-  }
-});
-
-app.get("/about", (req, res) => {
-  res.render("about", {
-    title: "About Us",
-    message: "Simple airbnb app.",
-  });
-});
-
-// Register Route
-app.get("/register", (req, res) => {
-  res.render("register", { title: "Register" });
-});
-
-app.post("/register", async (req, res) => {
-  const { username, email, password, password2 } = req.body;
-  if (password !== password2) {
-    return res.render("register", { error: "Passwords do not match!" });
-  }
-
-  try {
-    const user = new User({ username, email, password });
-    await user.save();
-    res.redirect("/login");
-  } catch (error) {
-    res.render("register", { error: "Error registering user!" });
-  }
-});
-
-// Login Route
-app.get("/login", (req, res) => {
-  const error = req.query.error; // Get error from query string
-  res.render("login", {
-    title: "Login",
-    error, // Pass error message to the template
-  });
-});
-
-app.post("/login", (req, res, next) => {
-  passport.authenticate("local", (err, user, info) => {
-    if (err) return next(err);
-    if (!user) {
-      // Pass the error message in the query string
-      return res.redirect(`/login?error=${info.message}`);
-    }
-    req.logIn(user, (err) => {
-      if (err) return next(err);
-      return res.redirect("/");
-    });
-  })(req, res, next);
-});
-
-// Logout Route
-app.get("/logout", (req, res) => {
-  req.logout((err) => {
-    res.redirect("/");
-  });
-});
-
-app.get("/allListings", async (req, res) => {
-  try {
-    res.render("pagination", {
-      title: "View Listings",
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("An error occurred while loading the page.");
-  }
-});
-
-app.get("/Listings/data", async (req, res) => {
-  try {
-    // Set pagination parameters
-    const limit = parseInt(req.query.length) || 10; // Items per page
-    const skip = parseInt(req.query.start) || 0; // Skip value
-
-    // Fetch listings with pagination
-    const listings = await Listing.find().skip(skip).limit(limit).lean();
-
-    // Send the response in DataTables format
-    const totalRecords = await Listing.countDocuments(); // Total records for pagination
-    res.json({
-      draw: parseInt(req.query.draw),
-      recordsTotal: totalRecords,
-      recordsFiltered: totalRecords,
-      data: listings,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("An error occurred while fetching listings.");
-  }
-});
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

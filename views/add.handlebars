@@ -4,7 +4,33 @@
       <h2>Create a New Listing</h2>
     </div>
     <div class="card-body">
-      <form action="/listings" method="POST">
+      <form action="/api/AirBnBs" method="POST">
+
+        <!-- Property Type Field -->
+        <div class="form-group">
+          <label for="property_type">Property Type</label>
+          <select
+            id="property_type"
+            name="property_type"
+            class="form-control select2"
+            required
+          >
+            <option value="Apartment">Apartment</option>
+            <option value="House">House</option>
+            <option value="Condo">Condo</option>
+            <option value="Loft">Loft</option>
+            <option value="Townhouse">Townhouse</option>
+            <option value="Villa">Villa</option>
+            <option value="Cottage">Cottage</option>
+            <option value="Bungalow">Bungalow</option>
+            <option value="Chalet">Chalet</option>
+            <option value="Farmhouse">Farmhouse</option>
+            <option value="Studio">Studio</option>
+          </select>
+          {{#if errors.property_type}}
+            <div class="text-danger">{{errors.property_type}}</div>
+          {{/if}}
+        </div>
         <div class="form-group">
           <label for="name">Listing Name</label>
           <input
@@ -15,7 +41,11 @@
             placeholder="Enter listing name"
             required
           />
+          {{#if errors.name}}
+            <div class="text-danger">{{errors.name}}</div>
+          {{/if}}
         </div>
+
         <div class="form-group">
           <label for="summary">Summary</label>
           <textarea
@@ -26,7 +56,11 @@
             rows="3"
             required
           ></textarea>
+          {{#if errors.summary}}
+            <div class="text-danger">{{errors.summary}}</div>
+          {{/if}}
         </div>
+
         <div class="form-group">
           <label for="space">Space Description</label>
           <textarea
@@ -37,7 +71,11 @@
             rows="3"
             required
           ></textarea>
+          {{#if errors.space}}
+            <div class="text-danger">{{errors.space}}</div>
+          {{/if}}
         </div>
+
         <div class="form-group">
           <label for="price">Price per Night</label>
           <input
@@ -48,7 +86,11 @@
             placeholder="Enter price per night"
             required
           />
+          {{#if errors.price}}
+            <div class="text-danger">{{errors.price}}</div>
+          {{/if}}
         </div>
+
         <div class="form-group">
           <label for="accommodates">Accommodates</label>
           <input
@@ -59,7 +101,11 @@
             placeholder="Number of guests"
             required
           />
+          {{#if errors.accommodates}}
+            <div class="text-danger">{{errors.accommodates}}</div>
+          {{/if}}
         </div>
+
         <div class="form-group">
           <label for="bedrooms">Bedrooms</label>
           <input
@@ -70,7 +116,11 @@
             placeholder="Number of bedrooms"
             required
           />
+          {{#if errors.bedrooms}}
+            <div class="text-danger">{{errors.bedrooms}}</div>
+          {{/if}}
         </div>
+
         <div class="form-group">
           <label for="beds">Beds</label>
           <input
@@ -81,7 +131,11 @@
             placeholder="Number of beds"
             required
           />
+          {{#if errors.beds}}
+            <div class="text-danger">{{errors.beds}}</div>
+          {{/if}}
         </div>
+
         <div class="form-group">
           <label for="bathrooms">Bathrooms</label>
           <input
@@ -93,7 +147,11 @@
             step="0.1"
             required
           />
+          {{#if errors.bathrooms}}
+            <div class="text-danger">{{errors.bathrooms}}</div>
+          {{/if}}
         </div>
+
         <div class="form-group">
           <label for="listing_url">Listing URL</label>
           <input
@@ -103,7 +161,11 @@
             class="form-control"
             placeholder="Enter listing URL"
           />
+          {{#if errors.listing_url}}
+            <div class="text-danger">{{errors.listing_url}}</div>
+          {{/if}}
         </div>
+
         <div class="form-group">
           <label for="amenities">Amenities</label>
           <select
@@ -124,8 +186,11 @@
             <option value="TV">TV</option>
             <option value="Gym">Gym</option>
           </select>
-
+          {{#if errors.amenities}}
+            <div class="text-danger">{{errors.amenities}}</div>
+          {{/if}}
         </div>
+
         <button type="submit" class="btn btn-primary">Create Listing</button>
       </form>
     </div>
