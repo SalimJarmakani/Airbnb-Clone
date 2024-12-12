@@ -1,62 +1,94 @@
 .container {
   background-color: #fff;
-  padding: 2rem;
-  border-radius: 8px;
+  padding: 30px;
+  border-radius: 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 400px;
+  max-width: 300px;
   text-align: center;
+  margin: auto;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-image: url(./images/airbnb.6.jpeg); /* Ensure the image path is correct */
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-position: top right;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center; /* Center the form horizontally */
+  align-items: center; /* Center the form vertically */
+}
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
-  font-size: 2rem;
-  margin-bottom: 1.5rem;
+  color: #333;
+  margin-bottom: 20px;
+  font-weight: bolder;
 }
 
 form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 15px;
 }
 
 label {
-  font-size: 1rem;
+  margin-bottom: -5px;
   text-align: left;
+  font-weight: bold;
 }
 
 input {
-  padding: 0.8rem;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  outline: none;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
 }
 
 input:focus {
-  border-color: #007bff;
+  outline: none;
+  border-color: #5c9dff;
 }
 
 button {
-  padding: 1rem;
-  font-size: 1rem;
-  background-color: #007bff;
-  color: white;
+  background: linear-gradient(to right, red, yellow);
+  color: black;
   border: none;
-  border-radius: 4px;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 20px;
   cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  filter: blur(0.5px);
 }
 
 button:hover {
-  background-color: #0056b3;
+  transform: scale(1.05); /* Scale the button slightly on hover */
+  font-size: 1.05em; /* Slightly increase font size */
+  filter: blur(0); /* Remove blur */
 }
 
 .error {
   color: red;
-  font-size: 0.9rem;
+  font-size: 14px;
 }
 
 p {
-  font-size: 0.9rem;
+  font-size: 14px;
+  color: red;
 }
 
 a {
