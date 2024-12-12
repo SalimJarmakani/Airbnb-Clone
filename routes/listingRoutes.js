@@ -87,58 +87,63 @@ router.get("/api/AirBnBs", async (req, res) => {
 });
 
 // Route to create a new AirBnB listing
-router.post("/api/AirBnBs", validateListing, async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+router.post(
+  "/api/AirBnBs",
+  validateListing,
+  authMiddleware,
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const id = new mongoose.Types.ObjectId();
+
+    try {
+      const {
+        name,
+        property_type,
+        price,
+        summary,
+        space,
+        accommodates,
+        bedrooms,
+        beds,
+        bathrooms,
+        listing_url,
+        amenities,
+      } = req.body;
+
+      const newListing = new Listing({
+        _id: id,
+        name,
+        property_type,
+        price,
+        summary,
+        space,
+        accommodates,
+        bedrooms,
+        beds,
+        bathrooms,
+        listing_url,
+        amenities,
+      });
+
+      await newListing.save();
+
+      res.status(201).json({
+        message: "Listing created successfully",
+        listing: newListing,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        message: "Error creating listing",
+        error: error.message,
+      });
+    }
   }
-
-  const id = new mongoose.Types.ObjectId();
-
-  try {
-    const {
-      name,
-      property_type,
-      price,
-      summary,
-      space,
-      accommodates,
-      bedrooms,
-      beds,
-      bathrooms,
-      listing_url,
-      amenities,
-    } = req.body;
-
-    const newListing = new Listing({
-      _id: id,
-      name,
-      property_type,
-      price,
-      summary,
-      space,
-      accommodates,
-      bedrooms,
-      beds,
-      bathrooms,
-      listing_url,
-      amenities,
-    });
-
-    await newListing.save();
-
-    res.status(201).json({
-      message: "Listing created successfully",
-      listing: newListing,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      message: "Error creating listing",
-      error: error.message,
-    });
-  }
-});
+);
 
 // Route to get a single listing by ID
 router.get("/api/AirBnBs/:id", async (req, res) => {
@@ -213,7 +218,7 @@ router.get("/api/AirBnBs/review/:id", async (req, res) => {
 });
 
 // Route to update a listing
-router.put("/api/AirBnBs/:id", async (req, res) => {
+router.put("/api/AirBnBs/:id", authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     const {
