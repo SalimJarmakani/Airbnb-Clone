@@ -5,7 +5,7 @@ const bodyParser = require("body-parser");
 const passport = require("passport");
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
-
+const crypto = require("crypto");
 const db = require(path.join(__dirname, "db", "dbOperations"));
 const airbnbRoutes = require(path.join(__dirname, "routes", "airbnbRoutes"));
 const authRoutes = require(path.join(__dirname, "routes", "authRoutes"));
